@@ -9,7 +9,7 @@ get(T) ->
     gen_server:call(storage, {get, T}).
 
 add(T,B) ->
-    gen_server:call(storage, {add, {T, B}}).
+    gen_server:cast(storage, {add, {T, B}}).
 
 
 all_titles() ->
@@ -17,7 +17,7 @@ all_titles() ->
 
 % Implementations
 start_link() ->
-    gen_server:start_link({local, storage}, ?MODULE, #{"first" => "post"}, []).
+    gen_server:start_link({local, storage}, ?MODULE, #{}, []).
 
 init(InitialPosts) ->
     {ok, InitialPosts}.
@@ -30,5 +30,7 @@ handle_call(list, _From, State) ->
     {reply, maps:keys(State), State}.
 
 handle_cast({add, {PostTitle, PostBody}}, State) ->
-    {noreply, State#{ PostTitle := PostBody }}.
+    NewState =  State#{ binary_to_list(PostTitle) => binary_to_list(PostBody) },
+    io:format("~p~n", [NewState]),
+    {noreply, NewState}.
     

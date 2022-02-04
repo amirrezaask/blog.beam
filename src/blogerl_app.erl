@@ -16,6 +16,7 @@ start(_StartType, _StartArgs) ->
 setup_cowboy() ->
     Dispatch = cowboy_router:compile([
 		{'_', [
+			{"/:title", blogerl_index_h, []},
 			{"/", blogerl_index_h, []}
 		]}
 	]),
