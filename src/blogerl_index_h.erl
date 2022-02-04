@@ -1,23 +1,20 @@
 -module(blogerl_index_h).
 -export([init/2]).
+-compile({inline, [headers/0]}).
 
 headers() ->
     #{<<"content-type">> => <<"text/plain; charset=utf-8">>}.
 
 
-init(Req0, _) ->
-    #{method := Method} = Req0,
-    case Method of
-        <<"GET">> ->
-            Title = cowboy_req:binding(title, Req0),
-            get_post(Req0, Title);
-        <<"POST">> ->
-            {ok, RawBody, _} = cowboy_req:read_body(Req0),
-            #{<<"title">> := Title, <<"body">> := Body} = jsone:decode(RawBody),
-            add_post(Req0, Title, Body)
-    end.
+init(#{method := <<"POST">>} = Req0, _) ->
+    {ok, RawBody, _} = cowboy_req:read_body(Req0),
+    #{<<"title">> := Title, <<"body">> := Body} = jsone:decode(RawBody),
+    add_post(Req0, Title, Body);
     
-    
+init(#{method := <<"GET">>} = Req0, _) ->    
+    Title = cowboy_req:binding(title, Req0),
+    get_post(Req0, Title).
+
 add_post(Req0, Title, Body) ->
     blogerl_storage:add(Title, Body),
     cowboy_req:reply(201, headers(), <<>>, Req0).
