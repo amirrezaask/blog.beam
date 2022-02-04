@@ -1,5 +1,6 @@
 -module(blogerl_index_h).
 -export([init/2]).
+
 headers() ->
     #{<<"content-type">> => <<"text/plain; charset=utf-8">>}.
 
