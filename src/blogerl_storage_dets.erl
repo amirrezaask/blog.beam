@@ -19,7 +19,7 @@ init(_) ->
     
 
 handle_call(list, _From, State) ->
-    {reply, dets:match_object(State, "_"), State};
+    {reply, io_lib:format("~p", [keys(State)]), State};
 
 handle_call(Key, _From, State) ->
     [{Key, Body}] = dets:lookup(State, Key),
@@ -31,3 +31,12 @@ handle_cast({Title, Body}, State) ->
     dets:sync(State),
     {noreply, State}.
 
+keys(TableName) ->
+    FirstKey = dets:first(TableName),
+        keys(TableName, FirstKey, [FirstKey]).
+
+keys(_TableName, '$end_of_table', ['$end_of_table'|Acc]) ->
+    Acc;
+keys(TableName, CurrentKey, Acc) ->
+    NextKey = dets:next(TableName, CurrentKey),
+    keys(TableName, NextKey, [NextKey|Acc]).
