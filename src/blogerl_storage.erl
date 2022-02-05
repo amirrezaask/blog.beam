@@ -1,36 +1,32 @@
 -module(blogerl_storage).
--export([start_link/0, init/1, handle_call/3, handle_cast/2, get/1, add/2, all_titles/0]).
-
+-export([start_link/1, handle_call/3, handle_cast/2, init/1, behaviour_info/1]).
+-export([add/3, get/2, list/1]).
 -behaviour(gen_server).
 
-% #{title => body}
-% API
-get(T) ->
-    gen_server:call(storage, {get, T}).
+behaviour_info(callbacks) ->
+    [{add, 1}, {get, 1}, {list, 0}, {init, 1}].
 
-add(T,B) ->
-    gen_server:cast(storage, {add, {T, B}}).
+add(Storage, Title, Body) ->
+    gen_server:cast(Storage, {Title, Body}).
 
+get(Storage, Title) ->
+    gen_server:call(Storage, {get, Title}).
 
-all_titles() ->
-    gen_server:call(storage, list).
+list(Storage) ->
+    gen_server:call(Storage, list).
 
-% Implementations
-start_link() ->
-    gen_server:start_link({local, storage}, ?MODULE, #{}, []).
+start_link(Mod) ->
+    gen_server:start_link({local, ?MODULE}, ?MODULE, Mod, []).
 
-init(InitialPosts) ->
-    {ok, InitialPosts}.
+init(Mod) ->
+    apply(Mod, init, [[]]),
+    {ok, Mod}.
 
-handle_call({get, PostTitle}, _From, State) ->
-    #{PostTitle := PostObj } = State,
-    {reply, PostObj, State};
+handle_cast(Request, Mod) ->
+    apply(Mod, add, [Request]),
+    {noreply, Mod}.
 
-handle_call(list, _From, State) ->
-    {reply, maps:keys(State), State}.
-
-handle_cast({add, {PostTitle, PostBody}}, State) ->
-    NewState =  State#{ binary_to_list(PostTitle) => binary_to_list(PostBody) },
-    io:format("~p~n", [NewState]),
-    {noreply, NewState}.
-    
+handle_call({get, Title}, _, Mod) ->
+    {reply, apply(Mod, get, Title), Mod};
+handle_call(list, _, Mod) ->
+    {reply, apply(Mod, list, []), Mod}.

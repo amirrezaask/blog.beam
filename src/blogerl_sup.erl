@@ -1,8 +1,3 @@
-%%%-------------------------------------------------------------------
-%% @doc blogerl top level supervisor.
-%% @end
-%%%-------------------------------------------------------------------
-
 -module(blogerl_sup).
 
 -behaviour(supervisor).
@@ -15,11 +10,14 @@
 
 start_link() ->
     supervisor:start_link({local, ?SERVER}, ?MODULE, []).
-init([]) ->
-    SupFlags = #{strategy => one_for_one,
-                 intensity => 1,
-                 period => 1},
-    ChildSpecs = [#{id => storage, start => {blogerl_storage_dets, start_link, []}}],
-    {ok, {SupFlags, ChildSpecs}}.
 
-%% internal functions
+children() -> [#{id => storage, start => {blogerl_storage, start_link, [blogerl_storage_dets]}}].
+
+init([]) ->
+    SupFlags = #{
+        strategy => one_for_one,
+        intensity => 1,
+        period => 1
+    },
+    ChildSpecs = children(),
+    {ok, {SupFlags, ChildSpecs}}.

@@ -1,42 +1,28 @@
 -module(blogerl_storage_dets).
--behaviour(gen_server).
--export([init/1, handle_call/3, handle_cast/2, get/1, add/2, all_titles/0, start_link/0]).
+-behaviour(blogerl_storage).
+-define(TABLE, blogerl_dets_table).
+-export([init/1, get/1, add/1, list/0]).
 
-add(Title, Body) ->
-    gen_server:cast(storage, {Title, Body}).
+add({Title, Body}) ->
+    dets:insert(?TABLE, {binary_to_list(Title), Body}),
+    dets:sync(?TABLE).
 
 get(Title) ->
-    gen_server:call(storage, Title).
+    [{Title, Body}] = dets:lookup(?TABLE, Title),
+    {ok, {Title, Body}}.
 
-all_titles() ->
-    gen_server:call(storage, list).
+list() ->
+    io_lib:format("~p", [titles(?TABLE)]).
 
-start_link() ->
-    gen_server:start_link({local, storage}, ?MODULE, #{}, []).
+init(Options) ->
+    dets:open_file(?TABLE, [{access, read_write}, {auto_save, 1000} | Options]).
 
-init(_) ->
-    dets:open_file(blogerl_dets_storage, [{access, read_write}, {auto_save, 1000}]).
-    
-
-handle_call(list, _From, State) ->
-    {reply, io_lib:format("~p", [keys(State)]), State};
-
-handle_call(Key, _From, State) ->
-    [{Key, Body}] = dets:lookup(State, Key),
-    {reply, Body , State}.
-
-
-handle_cast({Title, Body}, State) ->
-    dets:insert(State, {binary_to_list(Title), Body}),
-    dets:sync(State),
-    {noreply, State}.
-
-keys(TableName) ->
+titles(TableName) ->
     FirstKey = dets:first(TableName),
-        keys(TableName, FirstKey, [FirstKey]).
+    titles(TableName, FirstKey, [FirstKey]).
 
-keys(_TableName, '$end_of_table', ['$end_of_table'|Acc]) ->
+titles(_TableName, '$end_of_table', ['$end_of_table' | Acc]) ->
     Acc;
-keys(TableName, CurrentKey, Acc) ->
+titles(TableName, CurrentKey, Acc) ->
     NextKey = dets:next(TableName, CurrentKey),
-    keys(TableName, NextKey, [NextKey|Acc]).
+    titles(TableName, NextKey, [NextKey | Acc]).
