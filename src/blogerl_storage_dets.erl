@@ -14,18 +14,20 @@ all_titles() ->
 start_link() ->
     gen_server:start_link({local, storage}, ?MODULE, #{}, []).
 
-init(Filename) ->
-    {ok, Name} = dets:open_file(blogerl_dets_storage, [{access, read_write}]),
-    Name.
+init(_) ->
+    dets:open_file(blogerl_dets_storage, [{access, read_write}, {auto_save, 1000}]).
+    
 
 handle_call(list, _From, State) ->
     {reply, dets:match_object(State, "_"), State};
 
 handle_call(Key, _From, State) ->
-    {reply, dets:lookup(State, Key), State}.
+    [{Key, Body}] = dets:lookup(State, Key),
+    {reply, Body , State}.
 
 
 handle_cast({Title, Body}, State) ->
-    dets:insert(State, {Title, Body}),
+    dets:insert(State, {binary_to_list(Title), Body}),
+    dets:sync(State),
     {noreply, State}.
 

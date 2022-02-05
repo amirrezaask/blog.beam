@@ -19,7 +19,7 @@ init([]) ->
     SupFlags = #{strategy => one_for_one,
                  intensity => 1,
                  period => 1},
-    ChildSpecs = [#{id => storage, start => {blogerl_storage, start_link, []}}],
+    ChildSpecs = [#{id => storage, start => {blogerl_storage_dets, start_link, []}}],
     {ok, {SupFlags, ChildSpecs}}.
 
 %% internal functions
