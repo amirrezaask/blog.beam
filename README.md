@@ -3,8 +3,8 @@
 Simple blog engine, created for learning how to use OTP and erlang/elixir.
 ## Branches
 there are two branches:
-- [https://github.com/amirrezaask/blogerl/tree/erlang](Erlang)
-- [https://github.com/amirrezaask/blogerl/tree/elixir](Elixir)
+- [Erlang](https://github.com/amirrezaask/blogerl/tree/erlang)
+- [Elixir](https://github.com/amirrezaask/blogerl/tree/elixir)
 Both branches use **cowboy** webserver and **dets** for storage.
 
 
