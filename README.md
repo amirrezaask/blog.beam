@@ -1,21 +1,18 @@
-blogerl
-=====
+# blogerl
 
 Simple blog engine, created for learning how to use OTP and erlang/elixir.
-there are two versions<br>
-erlang version:<br>
+## Branches
+there are two branches:
+- [https://github.com/amirrezaask/blogerl/tree/erlang](Erlang)
+- [https://github.com/amirrezaask/blogerl/tree/elixir](Elixir)
+Both branches use **cowboy** webserver and **dets** for storage.
+
 
 ## API
 ### List of posts
 curl localhost:8080/
 ### Post body
-curl localhost:8080/post_title
+curl localhost:8080/:title
 
 ### New post
 curl -XPOST localhost:8080/ --data '{"title": "new title", "body": "new body"}'
-
-
-Build
------
-
-    $ rebar3 compile
