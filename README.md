@@ -1,8 +1,9 @@
 blogerl
 =====
 
-Simple blog engine, created for learning erlang.
-
+Simple blog engine, created for learning how to use OTP and erlang/elixir.
+there are two versions<br>
+erlang version:<br>
 
 ## API
 ### List of posts
