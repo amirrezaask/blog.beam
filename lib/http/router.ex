@@ -1,11 +1,16 @@
 defmodule Blogerl.Http.Router do
   use Plug.Router
-  plug Plug.Logger
+  alias Blogerl.Http.PostsController, as: PostsController
+  plug :match
+  plug Plug.Logger, log: :debug
   plug Plug.Parsers, parsers: [:json], json_decoder: Jason
 
-  # get "/:title", Blogerl.Http.PostsController, :show
-  get "/" do
-    send_resp(200, "salam")
-  end
+  plug :dispatch
 
+  # get "/:title", Blogerl.Http.PostsController, :show
+  get "/", do: PostsController.index(conn)
+
+  get "/:title", do: PostsController.show(conn)
+
+  post "/", do: PostsController.add(conn)
 end
