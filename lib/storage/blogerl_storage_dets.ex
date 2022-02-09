@@ -1,19 +1,16 @@
 defmodule Blogerl.Storage.Dets do
-  @behaviour Blogerl.Storage
+  @behaviour Blogerl.Storage.Protocol
   use GenServer
 
-
-
   # API
-  def start_link() do
-    GenServer.start_link(__MODULE__, %{:name => :blogerl_dets_table}, [])
+  def start_link([]) do
+    GenServer.start_link(__MODULE__, %{name: :table}, name: Storage)
   end
-
 
 
   @impl GenServer
   def init(%{:name => table}) do
-    :dets.open_file(table, [{:access, :read_write}])
+    :dets.open_file(table, [])
   end
 
   @impl GenServer

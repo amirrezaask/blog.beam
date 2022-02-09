@@ -6,10 +6,8 @@ defmodule Blogerl.Supervisor do
 
   def init(_) do
     children = [
-      # %{
-      #   id: Storage,
-      #   start: {}
-      # }
+      {Plug.Cowboy, scheme: :http, plug: Blogerl.Handler, options: [port: 8080]},
+      Blogerl.Storage.Dets
     ]
     Supervisor.init(children, strategy: :one_for_one)
   end

@@ -19,7 +19,7 @@ defmodule Blogerl.MixProject do
 
   defp deps do
     [
-      {:cowboy, "~> 2.9"}
+      {:plug_cowboy, "~> 2.0"}
     ]
   end
 end
