@@ -1,0 +1,16 @@
+{application, blogerl, [
+    {description, "An OTP application"},
+    {vsn, "0.1.0"},
+    {registered, []},
+    {mod, {blogerl_app, []}},
+    {applications, [
+        kernel,
+        cowboy,
+        stdlib
+    ]},
+    {env, []},
+    {modules, []},
+
+    {licenses, ["Apache 2.0"]},
+    {links, []}
+]}.
